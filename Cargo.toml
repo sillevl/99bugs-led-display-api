@@ -4,3 +4,4 @@ version = "0.1.0"
 authors = ["Sille Van Landschoot <info@sillevl.be>"]
 
 [dependencies]
+iron = "0.6.*"
