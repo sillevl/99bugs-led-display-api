@@ -16,7 +16,15 @@ fn handler(req: &mut Request) -> IronResult<Response> {
 
     let json_body = req.get::<bodyparser::Json>();
     match json_body {
-        Ok(Some(json_body)) => println!("Parsed body:\n{:?}", json_body),
+        Ok(Some(json_body)) => {
+            let image = json_body["image"].as_str().unwrap();
+            let filename = json_body["filename"].as_str().unwrap();
+            if(image.starts_with("data:image/png;base64,")) {
+                println!("Is data URL");
+            } else {
+                println!("is NOT a data URL");
+            }
+        },
         Ok(None) => println!("No body"),
         Err(err) => println!("Error: {:?}", err)
     }
