@@ -5,3 +5,6 @@ authors = ["Sille Van Landschoot <info@sillevl.be>"]
 
 [dependencies]
 iron = "0.6.*"
+router = "0.6.0"
+serde = "1.0"
+serde_json = "1.0"
