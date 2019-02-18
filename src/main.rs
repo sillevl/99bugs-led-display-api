@@ -1,4 +1,3 @@
-#[macro_use]
 extern crate serde_json;
 
 #[macro_use]
@@ -12,9 +11,13 @@ extern crate bodyparser;
 use iron::prelude::*;
 use iron::status;
 use iron::mime::Mime;
-use iron::request::*;
 use router::Router;
-use serde_json::Error;
+use std::io::Read;
+
+mod http_parser;
+mod png_parser;
+
+pub const BODY_BUFFER: usize = 1024;
 
 #[derive(Serialize, Deserialize)]
 struct JsonResponse {
@@ -29,35 +32,25 @@ fn generate_response(response: JsonResponse) -> IronResult<Response> {
     Ok(Response::with((content_type, status::Ok, body)))
 }
 
-fn handler(req: &mut Request) -> IronResult<Response> {
+fn handler(request: &mut Request) -> IronResult<Response> {
 
     let mut response = JsonResponse {
         status: "Ok".to_owned(),
         message: "Request handled successfully".to_owned(),
     };
+    
+    http_parser::check_content_type(request).expect("Content-type is set to image/png");
+    http_parser::check_content_size(request).expect("Content-size is set");
+    
+    let mut content: [u8; BODY_BUFFER] = [0x00; BODY_BUFFER];
+    request.body.read(&mut content).unwrap();
+    png_parser::check_png_header(&content).expect("PNG header to be found in content");
 
-    let json_body = req.get::<bodyparser::Json>();
-    match json_body {
-        Ok(Some(json_body)) => {
-            let image = json_body["image"].as_str().unwrap();
-            let filename = json_body["filename"].as_str().unwrap();
-            if image.starts_with("data:image/png;base64,") {
-                println!("Is data URL");
-            } else {
-                println!("is NOT a data URL");
-            }
-        },
-        Ok(None) => {
-            println!("No body");
-            response.status = "Error".to_owned();
-            response.message = "Request has no body".to_owned();
-        },
-        Err(err) => {
-            println!("Error: {:?}", err);
-            response.status = "Error".to_owned();
-            response.message = err.to_string();
-        }
-    }
+    // match content_type {
+    //     Ok(Some(body)) => println!("Read body:\n{}", body),
+    //     Ok(None) => println!("No body"),
+    //     Err(err) => println!("Error: {:?}", err)
+    // }
 
     return generate_response(response);    
 }
