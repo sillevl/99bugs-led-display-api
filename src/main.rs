@@ -7,12 +7,14 @@ extern crate iron;
 extern crate router;
 extern crate serde;
 extern crate bodyparser;
+extern crate image;
 
 use iron::prelude::*;
 use iron::status;
 use iron::mime::Mime;
 use router::Router;
 use std::io::Read;
+use image::GenericImageView;
 
 mod http_parser;
 mod png_parser;
@@ -45,6 +47,9 @@ fn handler(request: &mut Request) -> IronResult<Response> {
     let mut content: [u8; BODY_BUFFER] = [0x00; BODY_BUFFER];
     request.body.read(&mut content).unwrap();
     png_parser::check_png_header(&content).expect("PNG header to be found in content");
+
+    let img = image::load_from_memory(&content).unwrap().to_rgb();
+    println!("dimensions {:?}", img.dimensions());
 
     // match content_type {
     //     Ok(Some(body)) => println!("Read body:\n{}", body),
