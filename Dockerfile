@@ -26,7 +26,7 @@ COPY ./src ./src
 
 # build for release
 RUN rm ./target/release/deps/api_99bugs_display*
-RUN cargo build --release
+RUN cargo build --release --target=armv7-unknown-linux-gnueabihf
 
 # our final base
 #FROM alpine:latest
