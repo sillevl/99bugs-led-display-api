@@ -15,7 +15,6 @@ use iron::status;
 use iron::mime::Mime;
 use router::Router;
 use std::io::Read;
-use image::GenericImageView;
 use driver_99bugs_display::Display;
 
 mod http_parser;
