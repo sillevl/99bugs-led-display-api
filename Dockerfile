@@ -30,7 +30,7 @@ RUN cargo build --release
 
 # our final base
 #FROM alpine:latest
-FROM arm64v8/rust:1.32-slim
+FROM arm32v7/rust:1.32-slim
 
 # copy the build artifact from the build stage
 COPY --from=build /led-display-99bugs/target/release/api-99bugs-display .
