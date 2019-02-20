@@ -3,11 +3,8 @@ FROM rust:1.32 as build
 
 # Setup cross-compilation tools
 RUN apt update
-RUN apt install -qq gcc-arm-linux-gnueabihf -y
 RUN rustup target add armv7-unknown-linux-gnueabihf
-RUN mkdir -p ~/.cargo
-RUN echo '[target.armv7-unknown-linux-gnueabihf]' >> ~/.cargo/config
-RUN echo 'linker = "arm-linux-gnueabihf-gcc"' >> ~/.cargo/config
+RUN rustup toolchain install stable-armv7-unknown-linux-gnueabihf
 
 # create a new empty shell project
 RUN USER=root cargo new --bin led-display-99bugs
@@ -17,8 +14,11 @@ WORKDIR /led-display-99bugs
 COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
 
+# Set the toolchain of this foldr
+RUN rustup override set stable-armv7-unknown-linux-gnueabihf
+
 # this build step will cache your dependencies
-RUN cargo build --release
+RUN cargo build --release --target=armv7-unknown-linux-gnueabihf
 RUN rm src/*.rs
 
 # copy your source tree
