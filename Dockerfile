@@ -1,6 +1,14 @@
 # select build image
 FROM rust:1.32 as build
 
+# Setup cross-compilation tools
+RUN apt update
+RUN apt install -qq gcc-arm-linux-gnueabihf -y
+RUN rustup target add armv7-unknown-linux-gnueabihf
+RUN mkdir -p ~/.cargo
+RUN echo '[target.armv7-unknown-linux-gnueabihf]' >> ~/.cargo/config
+RUN echo 'linker = "arm-linux-gnueabihf-gcc"' >> ~/.cargo/config
+
 # create a new empty shell project
 RUN USER=root cargo new --bin led-display-99bugs
 WORKDIR /led-display-99bugs
@@ -22,7 +30,7 @@ RUN cargo build --release
 
 # our final base
 #FROM alpine:latest
-FROM rust:1.32
+FROM arm64v8/rust:1.32-slim
 
 # copy the build artifact from the build stage
 COPY --from=build /led-display-99bugs/target/release/api-99bugs-display .
