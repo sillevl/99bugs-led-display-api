@@ -20,7 +20,7 @@ use driver_99bugs_display::Display;
 
 mod http_parser;
 
-pub const BODY_BUFFER: usize = 1024;
+pub const BODY_BUFFER: usize = 32768;
 
 #[derive(Serialize, Deserialize)]
 struct JsonResponse {
