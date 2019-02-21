@@ -73,6 +73,9 @@ fn handler(request: &mut Request) -> IronResult<Response> {
 }
 
 fn main() {
+
+    println!("*** 99Bugs led display API started ***")
+    
     let mut router = Router::new();
     router.get("/", handler, "index");
     router.post("/", handler, "index");
