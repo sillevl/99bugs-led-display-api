@@ -30,8 +30,7 @@ COPY ./src ./src
 RUN cargo build --release --target=armv7-unknown-linux-gnueabihf
 
 # our final base
-# FROM arm32v7/rust:1.32-slim
-FROM arm32v6/alpine:latest
+FROM arm32v7/rust:1.32-slim
 
 # copy the build artifact from the build stage
 COPY --from=build /led-display-99bugs/target/armv7-unknown-linux-gnueabihf/release/api-99bugs-display .
