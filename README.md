@@ -20,6 +20,14 @@ When sending an image, tis important to set the `Content-Type` to `image/png`, a
  docker run -d -p 3000:3000 --device=/dev/spidev0.0 99bugs/99bugs-led-display-api
 ```
 
+## Cross-compilation using Docker
+
+The Dockerfile is setup to use cross compilation tools.
+
+This is inspired by:
+* https://medium.com/@wizofe/cross-compiling-rust-for-arm-e-g-raspberry-pi-using-any-os-11711ebfc52b
+* http://whitfin.io/speeding-up-rust-docker-builds/
+
 ## SPI settings Raspberry Pi
 
 To change the default add `spidev.bufsiz=32768` to `/boot/cmdline.txt` and reboot. Where `32768` is the maximum size you want to allow. (before `rootwait`)
