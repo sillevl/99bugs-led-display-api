@@ -15,12 +15,12 @@ use iron::status;
 use iron::mime::Mime;
 use router::Router;
 use std::io::Read;
-use image::GenericImageView;
+// use image::GenericImageView;
 use driver_99bugs_display::Display;
 
 mod http_parser;
 
-pub const BODY_BUFFER: usize = 1024 * 1024;
+pub const BODY_BUFFER: usize = 32768;
 
 #[derive(Serialize, Deserialize)]
 struct JsonResponse {
@@ -50,12 +50,15 @@ fn handler(request: &mut Request) -> IronResult<Response> {
     
     let mut content: [u8; BODY_BUFFER] = [0x00; BODY_BUFFER];
     request.body.read(&mut content).unwrap();
+//		println!("BODY: {:?}", content);
 
     // let image = ;
     match image::load_from_memory(&content) {
         Ok(image) => {
-            let image = image.to_rgb();
-            println!("dimensions {:?}", image.dimensions());
+						
+						println!("Image loaded from memory");
+            let image = image.to_rgb8();
+            println!("dimensions 2 2 {:?}", image.dimensions());
 
             let mut display = Display::new("/dev/spidev0.0");
             
