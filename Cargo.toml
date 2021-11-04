@@ -1,6 +1,6 @@
 [package]
 name = "api-99bugs-display"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Sille Van Landschoot <info@sillevl.be>"]
 edition = "2021"
 
