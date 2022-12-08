@@ -33,3 +33,21 @@ This is inspired by:
 To change the default add `spidev.bufsiz=32768` to `/boot/cmdline.txt` and reboot. Where `32768` is the maximum size you want to allow. (before `rootwait`)
 
 Source: https://raspberrypi.stackexchange.com/questions/65595/spi-transfer-fails-with-buffer-size-greater-than-4096
+
+## SystemD service script
+
+```
+[Unit]
+Description=99bugs Meme Machine API
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=pi
+ExecStart=/home/pi/99bugs-led-display-api/target/release/api-99bugs-display
+
+[Install]
+WantedBy=multi-user.target
+```
