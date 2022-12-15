@@ -6,9 +6,9 @@ extern crate serde_json;
 use serde_json::json;
 
 extern crate image;
-extern crate driver_99bugs_display;
+extern crate devbit_99bugs_led_display_driver;
 
-use driver_99bugs_display::Display;
+use devbit_99bugs_led_display_driver::Display;
 use image::ImageFormat;
 
 // This is our service handler. It receives a Request, routes on its
@@ -34,6 +34,55 @@ async fn display_service(req: Request<Body>) -> Result<Response<Body>, hyper::Er
           let whole_body = hyper::body::to_bytes(req.into_body()).await?;
 
           match image::load_from_memory_with_format(&whole_body, ImageFormat::Png) {
+            Ok(image) => {
+                let image = image.to_rgb8();
+                let (width, height) = image.dimensions();
+                if height > 64 || width > 96 {
+                  return Ok(Response::builder()
+                    .status(StatusCode::PAYLOAD_TOO_LARGE)
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .body(Body::from(json!({"message": "Dimensions cannot fit display. Please pick smaller image." }).to_string()))
+                    .unwrap()
+                  )
+                }
+    
+                let mut display = Display::new("/dev/spidev0.0");
+                match display.write_frame(&image.as_raw()) {
+                  Ok(_) => {},
+                  Err(err) => { 
+                    return Ok(Response::builder()
+                      .status(StatusCode::INTERNAL_SERVER_ERROR)
+                      .header(header::CONTENT_TYPE, "application/json")
+                      .body(Body::from(json!({"message": "Failed to send image to display", "error": err.to_string() }).to_string()))
+                      .unwrap()
+                    )
+                   }
+                };
+            },
+            Err(err) => {
+              return Ok(Response::builder()
+                .status(StatusCode::INTERNAL_SERVER_ERROR)
+                .header(header::CONTENT_TYPE, "application/json")
+                .body(Body::from(json!({"message": "Failed to decode image", "error": err.to_string() }).to_string()))
+                .unwrap()
+              )
+            }
+          };
+
+          Ok(Response::builder()
+              .status(StatusCode::OK)
+              .header(header::CONTENT_TYPE, "application/json")
+              .body(Body::from(json!({"message": "Successfully send image to display." }).to_string()))
+              .unwrap()
+            )
+      }
+
+      // This is the route for a base64 image string
+      (&Method::POST, "/base64") => {
+          let whole_body = hyper::body::to_bytes(req.into_body()).await?;
+          let base_image = base64::decode(&whole_body).unwrap();
+
+          match image::load_from_memory_with_format(&base_image, ImageFormat::Png) {
             Ok(image) => {
                 let image = image.to_rgb8();
                 let (width, height) = image.dimensions();

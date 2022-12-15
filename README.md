@@ -13,8 +13,15 @@ Content-Length: 610
 
 When sending an image, tis important to set the `Content-Type` to `image/png`, and set the `Content-Length` with a value that corresponds with the image byte size. (Note: a maximum of 1024 bytes is supported at the moment).
 
+You can also POST a base64 string to the `/base64` route.
 
 ## Docker
+
+```bash
+docker run -d -p 3000:3000 --device=/dev/spidev0.0 99bugs/99bugs-led-display-api
+```
+
+Or using a local build with docker-compose:
 
 ```bash
 docker-compose up -d --build
@@ -35,6 +42,8 @@ To change the default add `spidev.bufsiz=32768` to `/boot/cmdline.txt` and reboo
 Source: https://raspberrypi.stackexchange.com/questions/65595/spi-transfer-fails-with-buffer-size-greater-than-4096
 
 ## SystemD service script
+
+If you don't use docker, you will need a SystemD service script to start the service at bootup.
 
 ```
 [Unit]
