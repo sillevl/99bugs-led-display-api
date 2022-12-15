@@ -16,17 +16,17 @@ When sending an image, tis important to set the `Content-Type` to `image/png`, a
 
 ## Docker
 
-```
- docker run -d -p 3000:3000 --device=/dev/spidev0.0 99bugs/99bugs-led-display-api
+```bash
+docker-compose up -d --build
 ```
 
-## Cross-compilation using Docker
+<!-- ## Cross-compilation using Docker
 
 The Dockerfile is setup to use cross compilation tools.
 
 This is inspired by:
 * https://medium.com/@wizofe/cross-compiling-rust-for-arm-e-g-raspberry-pi-using-any-os-11711ebfc52b
-* http://whitfin.io/speeding-up-rust-docker-builds/
+* http://whitfin.io/speeding-up-rust-docker-builds/ -->
 
 ## SPI settings Raspberry Pi
 
